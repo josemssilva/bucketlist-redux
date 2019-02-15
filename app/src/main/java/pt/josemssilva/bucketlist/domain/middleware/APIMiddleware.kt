@@ -1,19 +1,22 @@
-package pt.josemssilva.bucketlist.middleware
+package pt.josemssilva.bucketlist.domain.middleware
 
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.rekotlin.DispatchFunction
 import org.rekotlin.Middleware
-import pt.josemssilva.bucketlist.ItemsRepository
-import pt.josemssilva.bucketlist.actions.ItemAction
-import pt.josemssilva.bucketlist.states.AppState
+import org.rekotlin.ReKotlinInit
+import pt.josemssilva.bucketlist.data.repository.ItemsRepository
+import pt.josemssilva.bucketlist.domain.AppState
+import pt.josemssilva.bucketlist.domain.list.ItemsAction
 
 val apiMiddleware: Middleware<AppState> = { dispatch, state ->
     { next ->
         { action ->
             when (action) {
-                is ItemAction.Refresh -> refreshItemListData(dispatch)
+                is ReKotlinInit -> refreshItemListData(dispatch)
+                is ItemsAction.Refresh -> refreshItemListData(dispatch)
             }
             next(action)
         }
@@ -22,9 +25,9 @@ val apiMiddleware: Middleware<AppState> = { dispatch, state ->
 
 private fun refreshItemListData(dispatch: DispatchFunction) {
     ItemsRepository(FirebaseFirestore.getInstance()).apply {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.Main) {
             val list = loadItems()
-            dispatch(ItemAction.ItemsLoaded(list))
+            dispatch(ItemsAction.ItemsLoaded(list))
         }
     }
 }

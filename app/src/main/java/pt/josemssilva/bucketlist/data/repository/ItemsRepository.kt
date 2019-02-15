@@ -1,10 +1,10 @@
-package pt.josemssilva.bucketlist
+package pt.josemssilva.bucketlist.data.repository
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import pt.josemssilva.bucketlist.entities.Item
-import pt.josemssilva.bucketlist.entities.Quantity
-import pt.josemssilva.bucketlist.entities.QuantityUnit
+import pt.josemssilva.bucketlist.data.entities.Item
+import pt.josemssilva.bucketlist.data.entities.Quantity
+import pt.josemssilva.bucketlist.data.entities.QuantityUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine

@@ -25,6 +25,7 @@ android {
 
 ext {
     androidx_appcompat = "1.0.2"
+    material = "1.0.0-rc01"
     androidx_core = "1.1.0-alpha04"
     rekotlin = "1.0.0"
     firebase = '16.0.7'
@@ -40,11 +41,14 @@ ext {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    implementation "com.google.android.material:material:$material"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.core:core-ktx:$androidx_core"
     implementation "org.rekotlin:rekotlin:$rekotlin"
     implementation "com.google.firebase:firebase-core:$firebase"
     implementation "com.google.firebase:firebase-firestore:$firestore"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     implementation "com.android.support:recyclerview-v7:$recycler_view"
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test:runner:$androidx_runner"

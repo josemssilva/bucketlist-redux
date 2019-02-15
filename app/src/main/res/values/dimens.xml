@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="common_margin_top">20dp</dimen>
+    <dimen name="common_margin_side">16dp</dimen>
+    <dimen name="common_spacing">10dp</dimen>
+</resources>
