@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.domain.list
+package pt.josemssilva.bucketlist.modules.items
 
 import org.rekotlin.Action
 import pt.josemssilva.bucketlist.data.entities.Item
@@ -6,10 +6,22 @@ import pt.josemssilva.bucketlist.data.entities.Item
 object ItemsReducer {
 
     fun reduce(action: Action, state: ItemsState) = when (action) {
-        is ItemsAction.ItemsLoaded -> itemsLoaded(action.items, state)
-        is ItemsAction.ItemCreated -> itemCreated(action.item, state)
-        is ItemsAction.ItemEdited -> itemEdited(action.item, state)
-        is ItemsAction.ItemDeleted -> itemDeleted(action.item, state)
+        is ItemsAction.ItemsLoaded -> itemsLoaded(
+            action.items,
+            state
+        )
+        is ItemsAction.ItemCreated -> itemCreated(
+            action.item,
+            state
+        )
+        is ItemsAction.ItemEdited -> itemEdited(
+            action.item,
+            state
+        )
+        is ItemsAction.ItemDeleted -> itemDeleted(
+            action.item,
+            state
+        )
         else -> state
     }
 

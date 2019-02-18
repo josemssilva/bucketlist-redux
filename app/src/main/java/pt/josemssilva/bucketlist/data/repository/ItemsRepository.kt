@@ -36,11 +36,11 @@ class ItemsRepository(
             firestoreInstance.collection("bucketlist")
                 .add(item)
                 .addOnSuccessListener { doc ->
-                    doc.get().result?.let {
+                    doc.id.let {
                         continuation.resume(
-                            mapFrom(it) ?: Item()
+                            item.copy(id = it)
                         )
-                    } ?: continuation.resumeWithException(Exception("Something to be treated later"))
+                    }
                 }
                 .addOnFailureListener {
                     continuation.resumeWithException(Exception("Something to be treated later"))
@@ -78,13 +78,13 @@ class ItemsRepository(
 
 }
 
-fun mapFrom(doc: DocumentSnapshot) = Item(
-    doc["id"] as String? ?: "",
-    doc["description"] as String? ?: "",
-    Quantity(
-        (doc["quantity"] as String? ?: "0").toInt(),
-        QuantityUnit.UNIT
-    )
-)
+//fun mapFrom(doc: DocumentSnapshot) = Item(
+//    doc["id"] as String? ?: "",
+//    doc["description"] as String? ?: "",
+//    Quantity(
+//        (doc["quantity"] as String? ?: "0").toInt(),
+//        QuantityUnit.UNIT
+//    )
+//)
 
-//fun mapFrom(doc: DocumentSnapshot) = doc.toObject(Item::class.java)
+fun mapFrom(doc: DocumentSnapshot) = doc.toObject(Item::class.java)

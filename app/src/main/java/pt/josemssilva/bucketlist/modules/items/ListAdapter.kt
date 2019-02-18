@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.presentation.list
+package pt.josemssilva.bucketlist.modules.items
 
 import android.view.LayoutInflater
 import android.view.View

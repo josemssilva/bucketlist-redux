@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.presentation.list
+package pt.josemssilva.bucketlist.modules.items
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import pt.josemssilva.bucketlist.R
 import pt.josemssilva.bucketlist.data.entities.Item
 import pt.josemssilva.bucketlist.data.entities.Quantity
 import pt.josemssilva.bucketlist.data.entities.QuantityUnit
-import pt.josemssilva.bucketlist.domain.list.ItemsAction
 import pt.josemssilva.bucketlist.store
 
 private const val BUNDLE_ITEM = "bundle_item"

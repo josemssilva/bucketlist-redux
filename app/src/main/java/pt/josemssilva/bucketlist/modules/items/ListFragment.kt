@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.presentation.list
+package pt.josemssilva.bucketlist.modules.items
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.list_fragment.*
 import org.rekotlin.StoreSubscriber
 import pt.josemssilva.bucketlist.R
+import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
-import pt.josemssilva.bucketlist.domain.AppState
-import pt.josemssilva.bucketlist.presentation.MainActivity
 import pt.josemssilva.bucketlist.store
 
 class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener {
@@ -31,7 +30,7 @@ class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener
 
         fab.setOnClickListener {
             activity?.let {
-                (it as MainActivity).navigate(EditItemFragment.newInstance())
+                store().dispatch(ItemsAction.CreateItem)
             }
         }
     }
@@ -61,8 +60,6 @@ class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener
     }
 
     override fun itemClicked(item: Item) {
-        activity?.let {
-            (it as MainActivity).navigate(EditItemFragment.newInstance(item))
-        }
+        store().dispatch(ItemsAction.EditItem(item))
     }
 }

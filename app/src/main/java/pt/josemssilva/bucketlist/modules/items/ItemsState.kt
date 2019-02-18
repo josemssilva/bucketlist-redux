@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.domain.list
+package pt.josemssilva.bucketlist.modules.items
 
 import org.rekotlin.StateType
 import pt.josemssilva.bucketlist.data.entities.Item
