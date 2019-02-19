@@ -9,12 +9,9 @@ import pt.josemssilva.bucketlist.R
 import pt.josemssilva.bucketlist.data.entities.Item
 
 class ListAdapter(
-    private val listener: Listener? = null
+    private val itemClick: (Item) -> Unit,
+    private val longItemClick: (Item) -> Unit
 ) : RecyclerView.Adapter<ListAdapter.Holder>() {
-
-    interface Listener {
-        fun itemClicked(item: Item)
-    }
 
     var items: List<Item> = emptyList()
         set(value) {
@@ -35,10 +32,11 @@ class ListAdapter(
         holder.bind(items[position])
     }
 
-    inner class Holder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    inner class Holder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnLongClickListener {
 
         init {
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         fun bind(item: Item) {
@@ -47,7 +45,12 @@ class ListAdapter(
         }
 
         override fun onClick(v: View?) {
-            listener?.itemClicked(items[adapterPosition])
+            itemClick(items[adapterPosition])
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            longItemClick(items[adapterPosition])
+            return true
         }
     }
 }

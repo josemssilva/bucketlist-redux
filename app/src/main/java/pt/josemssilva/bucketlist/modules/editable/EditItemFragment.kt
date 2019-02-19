@@ -1,4 +1,4 @@
-package pt.josemssilva.bucketlist.modules.items
+package pt.josemssilva.bucketlist.modules.editable
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.editable_fragment.*
+import pt.josemssilva.bucketlist.MainActivity
 import pt.josemssilva.bucketlist.R
 import pt.josemssilva.bucketlist.data.entities.Item
 import pt.josemssilva.bucketlist.data.entities.Quantity
@@ -59,8 +60,15 @@ class EditItemFragment : Fragment() {
             )
 
             store().dispatch(
-                if (item.id.isBlank()) ItemsAction.SubmitNewItem(item) else ItemsAction.SubmitUpdatedItem(item)
+                if (item.id.isBlank()) EditableAction.CreateItem(item) else EditableAction.EditItem(
+                    item
+                )
             )
+        }
+
+        (activity as MainActivity).supportActionBar?.apply {
+            setDisplayShowHomeEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
         }
     }
 }

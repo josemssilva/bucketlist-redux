@@ -2,4 +2,9 @@
     <string name="app_name">Bucket List</string>
 
     <string name="common_save">Save</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_cancel">Cancel</string>
+
+    <string name="delete_item_title">Delete item</string>
+    <string name="delete_item_message">You confirm you want to delete %s?</string>
 </resources>

@@ -7,9 +7,10 @@ import kotlinx.coroutines.launch
 import org.rekotlin.DispatchFunction
 import org.rekotlin.Middleware
 import org.rekotlin.ReKotlinInit
+import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
 import pt.josemssilva.bucketlist.data.repository.ItemsRepository
-import pt.josemssilva.bucketlist.common.AppState
+import pt.josemssilva.bucketlist.modules.editable.EditableAction
 import pt.josemssilva.bucketlist.modules.items.ItemsAction
 
 val apiMiddleware: Middleware<AppState> = { dispatch, state ->
@@ -18,8 +19,8 @@ val apiMiddleware: Middleware<AppState> = { dispatch, state ->
             when (action) {
                 is ReKotlinInit -> refreshItemListData(dispatch)
                 is ItemsAction.Refresh -> refreshItemListData(dispatch)
-                is ItemsAction.SubmitNewItem -> createItem(action.item, dispatch)
-                is ItemsAction.SubmitUpdatedItem -> updateItem(action.item, dispatch)
+                is EditableAction.CreateItem -> createItem(action.item, dispatch)
+                is EditableAction.EditItem -> updateItem(action.item, dispatch)
                 is ItemsAction.DeleteItem -> deleteItem(action.item, dispatch)
             }
             next(action)
@@ -41,7 +42,7 @@ private fun createItem(item: Item, dispatch: DispatchFunction) {
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val createdItem = createItem(item)
-                dispatch(ItemsAction.ItemCreated(createdItem))
+                dispatch(EditableAction.ItemCreated(createdItem))
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -54,7 +55,7 @@ private fun updateItem(item: Item, dispatch: DispatchFunction) {
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val updatedItem = updateItem(item)
-                dispatch(ItemsAction.ItemEdited(updatedItem))
+                dispatch(EditableAction.ItemEdited(updatedItem))
             } catch (e: Exception) {
                 e.printStackTrace()
             }

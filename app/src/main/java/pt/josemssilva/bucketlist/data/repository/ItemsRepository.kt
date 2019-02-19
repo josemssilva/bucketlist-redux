@@ -3,8 +3,6 @@ package pt.josemssilva.bucketlist.data.repository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import pt.josemssilva.bucketlist.data.entities.Item
-import pt.josemssilva.bucketlist.data.entities.Quantity
-import pt.josemssilva.bucketlist.data.entities.QuantityUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -20,7 +18,9 @@ class ItemsRepository(
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val list = task.result?.documents?.map { doc ->
-                            mapFrom(doc) ?: Item()
+                            mapFrom(doc)?.let {
+                                it.copy(id = doc.id)
+                            } ?: Item()
                         }?.toList() ?: emptyList()
 
                         continuation.resume(list)

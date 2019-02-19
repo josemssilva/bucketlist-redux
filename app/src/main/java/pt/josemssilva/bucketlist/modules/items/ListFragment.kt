@@ -1,5 +1,6 @@
 package pt.josemssilva.bucketlist.modules.items
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.list_fragment.*
 import org.rekotlin.StoreSubscriber
-import pt.josemssilva.bucketlist.R
+import pt.josemssilva.bucketlist.*
 import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
-import pt.josemssilva.bucketlist.store
 
-class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener {
+class ListFragment : Fragment(), StoreSubscriber<AppState> {
 
     companion object {
         fun newInstance(): Fragment {
@@ -29,9 +29,12 @@ class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener
         super.onViewCreated(view, savedInstanceState)
 
         fab.setOnClickListener {
-            activity?.let {
-                store().dispatch(ItemsAction.CreateItem)
-            }
+            router().navigateTo(ItemsRoute.Create)
+        }
+
+        (activity as MainActivity).supportActionBar?.apply {
+            setDisplayShowHomeEnabled(false)
+            setDisplayHomeAsUpEnabled(false)
         }
     }
 
@@ -48,10 +51,13 @@ class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener
     }
 
     override fun newState(state: AppState) {
-        state.items.items.let {
+        state.items?.items?.let {
             if (list.adapter == null) {
                 list.apply {
-                    adapter = ListAdapter(this@ListFragment)
+                    adapter = ListAdapter(
+                        itemClick = ::itemClick,
+                        longItemClick = ::itemLongClick
+                    )
                     layoutManager = LinearLayoutManager(this@ListFragment.requireContext())
                 }
             }
@@ -59,7 +65,25 @@ class ListFragment : Fragment(), StoreSubscriber<AppState>, ListAdapter.Listener
         }
     }
 
-    override fun itemClicked(item: Item) {
-        store().dispatch(ItemsAction.EditItem(item))
+    private fun showDeleteItemConfirmDialog(item: Item) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete_item_title))
+            .setMessage(getString(R.string.delete_item_message, item.description))
+            .setPositiveButton(R.string.common_confirm) { dialog, _ ->
+                store().dispatch(ItemsAction.DeleteItem(item))
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.common_cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun itemClick(item: Item) {
+        router().navigateTo(ItemsRoute.Edit(item))
+    }
+
+    private fun itemLongClick(item: Item) {
+        showDeleteItemConfirmDialog(item)
     }
 }
