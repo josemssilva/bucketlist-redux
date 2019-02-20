@@ -1,9 +1,9 @@
 package pt.josemssilva.bucketlist
 
 import org.rekotlin.Middleware
-import org.rekotlin.ReKotlinInit
 import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
+import pt.josemssilva.bucketlist.modules.auth.AuthAction
 import pt.josemssilva.bucketlist.modules.editable.EditableAction
 import pt.josemssilva.bucketlist.modules.items.ItemsAction
 import java.util.*
@@ -17,6 +17,10 @@ sealed class ItemsRoute : Route() {
     object Create : ItemsRoute()
     data class Edit(val item: Item) : ItemsRoute()
     data class Delete(val item: Item) : ItemsRoute()
+}
+
+sealed class AuthRoute : Route() {
+    object Main : AuthRoute()
 }
 
 interface RouteListener {
@@ -71,7 +75,8 @@ class Router {
             { action ->
 
                 when (action) {
-                    is ReKotlinInit -> navigateTo(ItemsRoute.All)
+                    is AuthAction.LoginSuccess -> navigateTo(ItemsRoute.All)
+                    is AuthAction.Logout -> navigateTo(AuthRoute.Main)
                     is ItemsAction.Start -> navigateTo(ItemsRoute.All)
                     is EditableAction.ItemCreated -> navigateTo(ItemsRoute.All)
                     is EditableAction.ItemEdited -> navigateTo(ItemsRoute.All)

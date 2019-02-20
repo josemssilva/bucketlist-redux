@@ -42,6 +42,11 @@ class ListAdapter(
         fun bind(item: Item) {
             itemView.itemId.text = item.id
             itemView.description.text = item.description
+
+            itemView.quantity.text = "%s %s".format(
+                item.quantity.value.toString(),
+                itemView.context.getString(item.quantity.unit.textResource())
+            )
         }
 
         override fun onClick(v: View?) {

@@ -3,4 +3,8 @@
     <dimen name="common_margin_top">20dp</dimen>
     <dimen name="common_margin_side">16dp</dimen>
     <dimen name="common_spacing">10dp</dimen>
+
+    <dimen name="list_item_id">8sp</dimen>
+    <dimen name="list_item_description">16sp</dimen>
+    <dimen name="list_item_quantity">12sp</dimen>
 </resources>

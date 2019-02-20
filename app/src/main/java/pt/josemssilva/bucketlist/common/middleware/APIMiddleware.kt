@@ -9,24 +9,61 @@ import org.rekotlin.ReKotlinInit
 import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
 import pt.josemssilva.bucketlist.data.repository.ItemsRepository
+import pt.josemssilva.bucketlist.data.repository.UserRepository
+import pt.josemssilva.bucketlist.modules.auth.AuthAction
 import pt.josemssilva.bucketlist.modules.editable.EditableAction
 import pt.josemssilva.bucketlist.modules.items.ItemsAction
 
 class APIMiddleware(
-    private val itemsRepository: ItemsRepository
+    private val itemsRepository: ItemsRepository,
+    private val userRepository: UserRepository
 ) {
 
     val apiMiddleware: Middleware<AppState> = { dispatch, state ->
         { next ->
             { action ->
                 when (action) {
-                    is ReKotlinInit -> refreshItemListData(dispatch)
+                    is ReKotlinInit -> checkUserAuthentication(dispatch)
+                    is AuthAction.Login -> performLogin(action.username, action.password, dispatch)
+                    is AuthAction.Logout -> performLogout()
                     is ItemsAction.Refresh -> refreshItemListData(dispatch)
                     is EditableAction.CreateItem -> createItem(action.item, dispatch)
                     is EditableAction.EditItem -> updateItem(action.item, dispatch)
                     is ItemsAction.DeleteItem -> deleteItem(action.item, dispatch)
                 }
                 next(action)
+            }
+        }
+    }
+
+    private fun checkUserAuthentication(dispatch: DispatchFunction) {
+        userRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                val user = loggedUser()
+                user?.apply {
+                    dispatch(AuthAction.LoginSuccess(user))
+                } ?: dispatch(AuthAction.Logout)
+            }
+        }
+    }
+
+    private fun performLogin(username: String, password: String, dispatch: DispatchFunction) {
+        userRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    val user = performLogin(username, password)
+                    dispatch(AuthAction.LoginSuccess(user))
+                } catch (e: Exception) {
+                    dispatch(AuthAction.LoginError(e.localizedMessage))
+                }
+            }
+        }
+    }
+
+    private fun performLogout() {
+        userRepository.apply {
+            GlobalScope.launch {
+                performLogout()
             }
         }
     }

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.rekotlin.StoreSubscriber
 import pt.josemssilva.bucketlist.common.AppState
+import pt.josemssilva.bucketlist.modules.auth.AuthFragment
 import pt.josemssilva.bucketlist.modules.editable.EditItemFragment
 import pt.josemssilva.bucketlist.modules.items.ListFragment
 
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity(), StoreSubscriber<AppState>, RouteListen
 
     override fun navigateTo(route: Route) {
         when (route) {
+            is AuthRoute.Main -> navigate(AuthFragment.newInstance(), false)
             is ItemsRoute.All -> navigate(ListFragment.newInstance(), false)
             is ItemsRoute.Create -> navigate(EditItemFragment.newInstance())
             is ItemsRoute.Edit -> navigate(EditItemFragment.newInstance(route.item))

@@ -13,13 +13,23 @@
         android:id="@+id/itemId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="10sp"
+        android:gravity="end"
+        android:textSize="@dimen/list_item_id"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing" />
+        android:layout_marginTop="@dimen/common_spacing"
+        android:textSize="@dimen/list_item_description"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_spacing"
+        android:textSize="@dimen/list_item_quantity" />
 
 </LinearLayout>

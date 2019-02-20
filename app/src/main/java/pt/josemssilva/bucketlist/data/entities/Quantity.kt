@@ -37,5 +37,14 @@ enum class QuantityUnit {
     LITER,
     GRAM,
     UNIT,
-    KILOGRAM
+    KILOGRAM;
+
+    companion object {
+        fun fromValue(value: String) = when (value.toUpperCase()) {
+            LITER.name.toUpperCase() -> LITER
+            GRAM.name.toUpperCase() -> GRAM
+            KILOGRAM.name.toUpperCase() -> KILOGRAM
+            else -> UNIT
+        }
+    }
 }

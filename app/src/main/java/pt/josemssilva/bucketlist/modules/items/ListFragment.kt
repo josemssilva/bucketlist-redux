@@ -38,16 +38,22 @@ class ListFragment : Fragment(), StoreSubscriber<AppState> {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
 
         store().subscribe(this)
     }
 
-    override fun onPause() {
+    override fun onStop() {
         store().unsubscribe(this)
 
-        super.onPause()
+        super.onStop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        store().dispatch(ItemsAction.Refresh)
     }
 
     override fun newState(state: AppState) {
