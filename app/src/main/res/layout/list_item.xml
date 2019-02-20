@@ -3,16 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="@dimen/common_margin_side"
+    android:paddingTop="@dimen/common_margin_top"
+    android:paddingEnd="@dimen/common_margin_side"
+    android:paddingBottom="@dimen/common_margin_top">
 
     <TextView
         android:id="@+id/itemId"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_spacing" />
 
 </LinearLayout>

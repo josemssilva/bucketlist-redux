@@ -1,6 +1,5 @@
 package pt.josemssilva.bucketlist.common.middleware
 
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,64 +12,69 @@ import pt.josemssilva.bucketlist.data.repository.ItemsRepository
 import pt.josemssilva.bucketlist.modules.editable.EditableAction
 import pt.josemssilva.bucketlist.modules.items.ItemsAction
 
-val apiMiddleware: Middleware<AppState> = { dispatch, state ->
-    { next ->
-        { action ->
-            when (action) {
-                is ReKotlinInit -> refreshItemListData(dispatch)
-                is ItemsAction.Refresh -> refreshItemListData(dispatch)
-                is EditableAction.CreateItem -> createItem(action.item, dispatch)
-                is EditableAction.EditItem -> updateItem(action.item, dispatch)
-                is ItemsAction.DeleteItem -> deleteItem(action.item, dispatch)
-            }
-            next(action)
-        }
-    }
-}
+class APIMiddleware(
+    private val itemsRepository: ItemsRepository
+) {
 
-private fun refreshItemListData(dispatch: DispatchFunction) {
-    ItemsRepository(FirebaseFirestore.getInstance()).apply {
-        GlobalScope.launch(Dispatchers.Main) {
-            val list = loadItems()
-            dispatch(ItemsAction.ItemsLoaded(list))
-        }
-    }
-}
-
-private fun createItem(item: Item, dispatch: DispatchFunction) {
-    ItemsRepository(FirebaseFirestore.getInstance()).apply {
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val createdItem = createItem(item)
-                dispatch(EditableAction.ItemCreated(createdItem))
-            } catch (e: Exception) {
-                e.printStackTrace()
+    val apiMiddleware: Middleware<AppState> = { dispatch, state ->
+        { next ->
+            { action ->
+                when (action) {
+                    is ReKotlinInit -> refreshItemListData(dispatch)
+                    is ItemsAction.Refresh -> refreshItemListData(dispatch)
+                    is EditableAction.CreateItem -> createItem(action.item, dispatch)
+                    is EditableAction.EditItem -> updateItem(action.item, dispatch)
+                    is ItemsAction.DeleteItem -> deleteItem(action.item, dispatch)
+                }
+                next(action)
             }
         }
     }
-}
 
-private fun updateItem(item: Item, dispatch: DispatchFunction) {
-    ItemsRepository(FirebaseFirestore.getInstance()).apply {
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val updatedItem = updateItem(item)
-                dispatch(EditableAction.ItemEdited(updatedItem))
-            } catch (e: Exception) {
-                e.printStackTrace()
+    private fun refreshItemListData(dispatch: DispatchFunction) {
+        itemsRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                val list = loadItems()
+                dispatch(ItemsAction.ItemsLoaded(list))
             }
         }
     }
-}
 
-private fun deleteItem(item: Item, dispatch: DispatchFunction) {
-    ItemsRepository(FirebaseFirestore.getInstance()).apply {
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                deleteItem(item)
-                dispatch(ItemsAction.ItemDeleted(item))
-            } catch (e: Exception) {
-                e.printStackTrace()
+    private fun createItem(item: Item, dispatch: DispatchFunction) {
+        itemsRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    val createdItem = createItem(item)
+                    dispatch(EditableAction.ItemCreated(createdItem))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun updateItem(item: Item, dispatch: DispatchFunction) {
+        itemsRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    val updatedItem = updateItem(item)
+                    dispatch(EditableAction.ItemEdited(updatedItem))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun deleteItem(item: Item, dispatch: DispatchFunction) {
+        itemsRepository.apply {
+            GlobalScope.launch(Dispatchers.Main) {
+                try {
+                    deleteItem(item)
+                    dispatch(ItemsAction.ItemDeleted(item))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
