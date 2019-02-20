@@ -49,10 +49,3 @@ data class Item(
         }
     }
 }
-
-fun Item.toMap() = HashMap<String, String>().apply {
-    put(Item.Keys.ID.value, id)
-    put(Item.Keys.DESCRIPTION.value, description)
-    put(Quantity.Keys.VALUE.value, quantity.value.toString())
-    put(Quantity.Keys.UNIT.value, quantity.unit.name)
-}

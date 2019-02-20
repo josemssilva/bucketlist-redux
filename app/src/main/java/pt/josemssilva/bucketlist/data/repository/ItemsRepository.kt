@@ -3,6 +3,8 @@ package pt.josemssilva.bucketlist.data.repository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import pt.josemssilva.bucketlist.data.entities.Item
+import pt.josemssilva.bucketlist.data.entities.Quantity
+import pt.josemssilva.bucketlist.data.entities.QuantityUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -18,9 +20,7 @@ class ItemsRepository(
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val list = task.result?.documents?.map { doc ->
-                            mapFrom(doc)?.let {
-                                it.copy(id = doc.id)
-                            } ?: Item()
+                            mapFrom(doc)
                         }?.toList() ?: emptyList()
 
                         continuation.resume(list)
@@ -34,7 +34,7 @@ class ItemsRepository(
     suspend fun createItem(item: Item): Item {
         return suspendCoroutine { continuation ->
             firestoreInstance.collection("bucketlist")
-                .add(item)
+                .add(item.toMap())
                 .addOnSuccessListener { doc ->
                     doc.id.let {
                         continuation.resume(
@@ -52,7 +52,7 @@ class ItemsRepository(
         return suspendCoroutine { continuation ->
             firestoreInstance.collection("bucketlist")
                 .document(item.id)
-                .set(item)
+                .set(item.toMap())
                 .addOnSuccessListener {
                     continuation.resume(item)
                 }
@@ -78,13 +78,17 @@ class ItemsRepository(
 
 }
 
-//fun mapFrom(doc: DocumentSnapshot) = Item(
-//    doc["id"] as String? ?: "",
-//    doc["description"] as String? ?: "",
-//    Quantity(
-//        (doc["quantity"] as String? ?: "0").toInt(),
-//        QuantityUnit.UNIT
-//    )
-//)
+fun mapFrom(doc: DocumentSnapshot) = Item(
+    doc.id,
+    doc[Item.Keys.DESCRIPTION.value] as String? ?: "",
+    Quantity(
+        (doc[Quantity.Keys.VALUE.value] as String? ?: "0").toInt(),
+        QuantityUnit.UNIT
+    )
+)
 
-fun mapFrom(doc: DocumentSnapshot) = doc.toObject(Item::class.java)
+fun Item.toMap() = HashMap<String, String>().apply {
+    put(Item.Keys.DESCRIPTION.value, description)
+    put(Quantity.Keys.VALUE.value, quantity.value.toString())
+    put(Quantity.Keys.UNIT.value, quantity.unit.name)
+}

@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 data class Quantity(
     val value: Int = 0,
-    val unit: QuantityUnit = QuantityUnit.KILOGRAM
+    val unit: QuantityUnit = QuantityUnit.UNIT
 ) : Parcelable {
     enum class Keys(val value: String) {
         VALUE("value"),
