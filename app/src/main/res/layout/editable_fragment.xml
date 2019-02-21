@@ -67,4 +67,6 @@
         app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@id/quantity_layout" />
 
+    <include layout="@layout/common_loading" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

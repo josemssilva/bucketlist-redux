@@ -6,11 +6,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.rekotlin.StoreSubscriber
 import pt.josemssilva.bucketlist.common.AppState
+import pt.josemssilva.bucketlist.data.entities.Item
 import pt.josemssilva.bucketlist.modules.auth.AuthFragment
+import pt.josemssilva.bucketlist.modules.auth.LoginState
 import pt.josemssilva.bucketlist.modules.editable.EditItemFragment
 import pt.josemssilva.bucketlist.modules.items.ListFragment
 
-class MainActivity : AppCompatActivity(), StoreSubscriber<AppState>, RouteListener {
+class MainActivity : AppCompatActivity(), StoreSubscriber<AppState> {
+
+    private var currentState: AppState? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,31 +26,36 @@ class MainActivity : AppCompatActivity(), StoreSubscriber<AppState>, RouteListen
         super.onStart()
 
         store().subscribe(this)
-        router().subscribe(this)
     }
 
     override fun onStop() {
         store().unsubscribe(this)
-        router().unsubscribe(this)
 
         super.onStop()
     }
 
     override fun newState(state: AppState) {
+        if (state.auth != currentState?.auth) {
+            navigate(
+                if (state.auth?.loginState == LoginState.ACTIVE) ListFragment.newInstance(object :
+                    ListFragment.RouteListener {
+                    override fun createItem() {
+                        navigate(EditItemFragment.newInstance())
+                    }
 
-    }
-
-    override fun navigateTo(route: Route) {
-        when (route) {
-            is AuthRoute.Main -> navigate(AuthFragment.newInstance(), false)
-            is ItemsRoute.All -> navigate(ListFragment.newInstance(), false)
-            is ItemsRoute.Create -> navigate(EditItemFragment.newInstance())
-            is ItemsRoute.Edit -> navigate(EditItemFragment.newInstance(route.item))
-            is Route.Finish -> finish()
+                    override fun editItem(item: Item) {
+                        navigate(EditItemFragment.newInstance(item))
+                    }
+                })
+                else AuthFragment.newInstance(),
+                false
+            )
         }
+
+        currentState = state
     }
 
-    fun navigate(fragment: Fragment, addToBackStack: Boolean = true) {
+    private fun navigate(fragment: Fragment, addToBackStack: Boolean = true) {
         val transaction = supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
 
@@ -64,9 +73,5 @@ class MainActivity : AppCompatActivity(), StoreSubscriber<AppState>, RouteListen
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onBackPressed() {
-        router().goBack()
     }
 }

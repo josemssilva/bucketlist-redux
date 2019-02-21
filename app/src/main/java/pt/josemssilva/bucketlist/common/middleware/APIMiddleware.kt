@@ -27,8 +27,7 @@ class APIMiddleware(
                     is AuthAction.Login -> performLogin(action.username, action.password, dispatch)
                     is AuthAction.Logout -> performLogout()
                     is ItemsAction.Refresh -> refreshItemListData(dispatch)
-                    is EditableAction.CreateItem -> createItem(action.item, dispatch)
-                    is EditableAction.EditItem -> updateItem(action.item, dispatch)
+                    is EditableAction.Editing.Submit -> submitItem(action.item, dispatch)
                     is ItemsAction.DeleteItem -> deleteItem(action.item, dispatch)
                 }
                 next(action)
@@ -75,6 +74,11 @@ class APIMiddleware(
                 dispatch(ItemsAction.ItemsLoaded(list))
             }
         }
+    }
+
+    private fun submitItem(item: Item, dispatch: DispatchFunction) {
+        if (item.id.isBlank()) createItem(item, dispatch)
+        else updateItem(item, dispatch)
     }
 
     private fun createItem(item: Item, dispatch: DispatchFunction) {

@@ -9,15 +9,26 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.list_fragment.*
 import org.rekotlin.StoreSubscriber
-import pt.josemssilva.bucketlist.*
+import pt.josemssilva.bucketlist.MainActivity
+import pt.josemssilva.bucketlist.R
 import pt.josemssilva.bucketlist.common.AppState
 import pt.josemssilva.bucketlist.data.entities.Item
+import pt.josemssilva.bucketlist.store
 
 class ListFragment : Fragment(), StoreSubscriber<AppState> {
 
+    interface RouteListener {
+        fun createItem()
+        fun editItem(item: Item)
+    }
+
+    private var listener: RouteListener? = null
+
     companion object {
-        fun newInstance(): Fragment {
-            return ListFragment()
+        fun newInstance(listener: RouteListener? = null): Fragment {
+            val f = ListFragment()
+            f.listener = listener
+            return f
         }
     }
 
@@ -29,7 +40,7 @@ class ListFragment : Fragment(), StoreSubscriber<AppState> {
         super.onViewCreated(view, savedInstanceState)
 
         fab.setOnClickListener {
-            router().navigateTo(ItemsRoute.Create)
+            listener?.createItem()
         }
 
         (activity as MainActivity).supportActionBar?.apply {
@@ -86,7 +97,7 @@ class ListFragment : Fragment(), StoreSubscriber<AppState> {
     }
 
     private fun itemClick(item: Item) {
-        router().navigateTo(ItemsRoute.Edit(item))
+        listener?.editItem(item)
     }
 
     private fun itemLongClick(item: Item) {

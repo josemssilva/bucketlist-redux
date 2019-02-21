@@ -13,13 +13,11 @@ import pt.josemssilva.bucketlist.data.repository.ItemsRepository
 import pt.josemssilva.bucketlist.data.repository.UserRepository
 
 fun store() = BucketListApp.store
-fun router() = BucketListApp.router
 
 class BucketListApp : Application() {
 
     companion object {
         internal lateinit var store: Store<AppState>
-        internal val router = Router()
     }
 
     override fun onCreate() {
@@ -35,8 +33,7 @@ class BucketListApp : Application() {
                 APIMiddleware(
                     ItemsRepository(FirebaseFirestore.getInstance()),
                     UserRepository(FirebaseAuth.getInstance())
-                ).apiMiddleware,
-                router.intercept
+                ).apiMiddleware
             )
         )
     }

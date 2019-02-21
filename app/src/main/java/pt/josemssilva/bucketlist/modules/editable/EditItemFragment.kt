@@ -1,11 +1,13 @@
 package pt.josemssilva.bucketlist.modules.editable
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.common_loading.*
 import kotlinx.android.synthetic.main.editable_fragment.*
 import org.rekotlin.StoreSubscriber
 import pt.josemssilva.bucketlist.MainActivity
@@ -32,7 +34,7 @@ class EditItemFragment : Fragment(), StoreSubscriber<AppState> {
         }
     }
 
-    var editableItem: Item? = null
+    lateinit var editableItem: Item
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.editable_fragment, container, false)
@@ -43,7 +45,7 @@ class EditItemFragment : Fragment(), StoreSubscriber<AppState> {
 
         save_button.setOnClickListener {
 
-            val item = (editableItem ?: Item()).copy(
+            val item = editableItem.copy(
                 description = description.text.toString(),
                 quantity = Quantity(
                     value = quantity.text.toString().toInt(),
@@ -51,10 +53,7 @@ class EditItemFragment : Fragment(), StoreSubscriber<AppState> {
                 )
             )
 
-            store().dispatch(
-                if (item.id.isBlank()) EditableAction.CreateItem(item)
-                else EditableAction.EditItem(item)
-            )
+            store().dispatch(EditableAction.Editing.Submit(item))
         }
 
         unit_spinner.adapter = ArrayAdapter<String>(
@@ -70,13 +69,9 @@ class EditItemFragment : Fragment(), StoreSubscriber<AppState> {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        arguments?.getParcelable<Item>(BUNDLE_ITEM)?.let {
-            editableItem = it
-        }
+        editableItem = arguments?.getParcelable(BUNDLE_ITEM) ?: Item()
 
-        editableItem?.let {
-            refreshInputFields(it)
-        }
+        store().dispatch(EditableAction.Editing.Data(editableItem))
     }
 
     override fun onStart() {
@@ -94,17 +89,37 @@ class EditItemFragment : Fragment(), StoreSubscriber<AppState> {
     override fun newState(state: AppState) {
         state.editable?.apply {
             redrawUI(this)
-        }
+        } ?: requireActivity().onBackPressed()
     }
 
     private fun redrawUI(state: EditableState) {
-        refreshInputFields(state.item)
+        editableItem = state.item
+        toggleLoading(state.stateType == EditableStateType.SUBMITTING)
+
+        refreshInputFields(editableItem)
+
+        state.genericError?.apply {
+            AlertDialog.Builder(requireContext())
+                .setMessage(this)
+                .setPositiveButton(R.string.common_ok) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+
+        description.error = state.descriptionError
+        quantity.error = state.quantityError
     }
 
     private fun refreshInputFields(item: Item) {
+
         description.setText(item.description)
         quantity.setText("${item.quantity.value}")
 
         unit_spinner.setSelection(item.quantity.unit.ordinal)
+    }
+
+    private fun toggleLoading(isVisible: Boolean) {
+        loading.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 }
